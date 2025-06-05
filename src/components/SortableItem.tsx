@@ -36,7 +36,8 @@ export default function SortableItem({ id, label, code, type, order, remove }: S
       {...listeners}
       id={`item-${id}`}
       style={{ ...style, touchAction: "none" }}
-      className="p-2 bg-gray-100 rounded-md cursor-grab flex items-center justify-between text-xs">
+      className="p-2 bg-gray-100 rounded-md cursor-grab flex items-center justify-between text-xs"
+    >
       <div className="flex-1 grid grid-cols-[auto,1fr] gap-2 items-center">
         <div>
           <strong className="block">{order}</strong>
@@ -52,7 +53,8 @@ export default function SortableItem({ id, label, code, type, order, remove }: S
             e.stopPropagation();
             remove({ id, label, code, type });
           }}
-          className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+          className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        >
           Delete
         </button>
       </div>

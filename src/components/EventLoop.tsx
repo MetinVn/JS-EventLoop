@@ -1,5 +1,13 @@
 import { useState, ReactNode } from "react";
-import { DndContext, closestCenter, useSensor, useSensors, TouchSensor, MouseSensor, DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  TouchSensor,
+  MouseSensor,
+  DragEndEvent,
+} from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import gsap from "gsap";
 import SortableItem from "./SortableItem";
@@ -198,8 +206,9 @@ function EventLoopVisualizer() {
       <header className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900">JS Event Loop Visualizer</h1>
         <p className="mt-2 text-lg text-gray-600">
-          Drag and drop events to adjust their order. Then click <span className="font-semibold">Run</span> to see them execute naturally
-          with animated highlights and sequential logs. Logs are divided into synchronous and asynchronous sections.
+          Drag and drop events to adjust their order. Then click <span className="font-semibold">Run</span> to see them
+          execute naturally with animated highlights and sequential logs. Logs are divided into synchronous and
+          asynchronous sections.
         </p>
       </header>
 
@@ -231,7 +240,8 @@ function EventLoopVisualizer() {
         <h2 className="text-lg font-semibold text-gray-800">Manage Events</h2>
         <button
           onClick={() => setModalOpen(!modalOpen)}
-          className="mt-3 px-4 py-2 bg-transparent border border-gray-400 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+          className="mt-3 px-4 py-2 bg-transparent border border-gray-400 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+        >
           Add Event
         </button>
         {modalOpen && (
@@ -242,7 +252,8 @@ function EventLoopVisualizer() {
                 <button
                   key={item.id}
                   onClick={() => addItem(item)}
-                  className="px-3 py-1 bg-transparent border border-gray-400 rounded hover:bg-gray-300 text-xs transition-colors duration-200">
+                  className="px-3 py-1 bg-transparent border border-gray-400 rounded hover:bg-gray-300 text-xs transition-colors duration-200"
+                >
                   {item.label}
                 </button>
               ))}
@@ -257,7 +268,8 @@ function EventLoopVisualizer() {
         <button
           disabled={executing}
           onClick={runExample}
-          className="px-5 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50 transition-colors duration-200 shadow-md">
+          className="px-5 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50 transition-colors duration-200 shadow-md"
+        >
           {executing ? (
             <div className="flex items-center justify-center animate-spin border border-dashed p-2 rounded-full bg-indigo-500"></div>
           ) : (
@@ -273,7 +285,11 @@ function EventLoopVisualizer() {
           <section className="flex-1">
             <h3 className="text-sm font-semibold text-gray-800 mb-2">Sync Logs</h3>
             <div className="p-3 bg-gray-800 text-white border border-gray-700 rounded min-h-[80px] overflow-auto text-xs">
-              {syncLogs.length > 0 ? syncLogs.map((log, i) => <p key={i}>{log}</p>) : <p className="text-gray-400 italic">No sync logs</p>}
+              {syncLogs.length > 0 ? (
+                syncLogs.map((log, i) => <p key={i}>{log}</p>)
+              ) : (
+                <p className="text-gray-400 italic">No sync logs</p>
+              )}
             </div>
           </section>
           <section className="flex-1">
