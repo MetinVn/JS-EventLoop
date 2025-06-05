@@ -1,14 +1,54 @@
-# JS Event Loop Visualizer (React + TypeScript + Vite)
+# JS Event Loop Visualizer
 
-This project is a modern React application built with TypeScript and powered by Vite. It provides a fast and optimized development environment with hot module replacement, ensuring a smooth and efficient workflow.
+A modern React app built with TypeScript and Vite to help developers visualize and understand the JavaScript event loop through interactive learning.
 
-## About
+---
 
-This application is designed to help developers understand and visualize how the JavaScript event loop works. By allowing users to interactively arrange and execute various synchronous and asynchronous events, it provides a hands-on learning experience.
+## Table of Contents
 
-- **Educational:** A tool to explore JavaScript's concurrency model and task scheduling.
-- **Event Loop Visualization:** Demonstrates the execution flow of synchronous and asynchronous operations.
-- **Interactive Learning:** Users can rearrange event execution order and see real-time results.
-- **Accurate Representation:** Captures the behavior of microtasks, macrotasks, and Web API interactions.
+- [Project Overview](#project-overview)
+- [Project Structure & Navigation](#project-structure--navigation)
+- [Technology Stack](#technology-stack)
+- [Features](#features)
 
-This project serves as an educational resource for anyone looking to deepen their understanding of how JavaScript handles event execution.
+---
+
+## Project Overview
+
+JS Event Loop Visualizer is an educational tool for exploring JavaScript’s concurrency model and event scheduling. Users can interactively arrange and execute various synchronous and asynchronous events to see how the event loop processes them in real time.
+
+---
+
+## Project Structure & Navigation
+
+- **src/App.tsx**: Main app entry, sets up the visualizer and about sections.
+- **src/components/**:
+  - `EventLoop.tsx`: Core event loop visualizer logic and UI.
+  - `SortableItem.tsx`: Draggable event item component.
+  - `About.tsx`: Project info and usage guide.
+- **src/types/types.ts**: TypeScript types for event items and props.
+- **src/images/**: Contains event loop diagram image.
+- **src/main.tsx**: React root rendering.
+- **src/index.css**: Tailwind CSS import and global styles.
+
+---
+
+## Technology Stack
+
+- **React 19**: UI library for building interactive interfaces.
+- **TypeScript**: Type-safe JavaScript for maintainability.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **GSAP**: Animation library for smooth UI transitions.
+- **@dnd-kit**: Drag-and-drop utilities for event reordering.
+- **React Icons**: For iconography in the UI.
+
+---
+
+## Features
+
+- **Educational Focus:** Helps users explore JavaScript’s concurrency model and event scheduling.
+- **Event Loop Visualization:** Demonstrates execution flow of synchronous, microtask, and macrotask operations.
+- **Interactive Learning:** Users can rearrange and execute events, observing real-time results.
+- **Modern UI:** Responsive and animated interface for an engaging learning experience.
+
+---
