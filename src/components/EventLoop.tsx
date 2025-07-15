@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useReducer } from "react";
 import {
   DndContext,
   closestCenter,
@@ -14,6 +14,8 @@ import SortableItem from "./SortableItem";
 import { Item, ItemType } from "../types/types";
 import { additionalEvents, initialEvents } from "../App";
 import { LuZap, LuHourglass, LuRefreshCcw, LuFastForward, LuRepeat } from "react-icons/lu";
+import ErrorReducer, { initialErrorStates } from "./ErrorReducer";
+import LogsReducer, { initialLogsState } from "./LogsReducer";
 
 const getExecutionIcon = (type: ItemType): ReactNode => {
   switch (type) {
@@ -33,36 +35,35 @@ const getExecutionIcon = (type: ItemType): ReactNode => {
 };
 
 function EventLoopVisualizer() {
-  const [syncLogs, setSyncLogs] = useState<ReactNode[]>([]);
-  const [asyncLogs, setAsyncLogs] = useState<ReactNode[]>([]);
   const [runCount, setRunCount] = useState(0);
-  const [modalOpen, setModalOpen] = useState(false);
 
-  const [eventLimitError, setEventLimitError] = useState("");
-  const [emptyExecutionListError, setEmptyExecutionListError] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [executing, setExecuting] = useState(false);
+  const [canAddEvent, setCanAddEvent] = useState(true);
+
+  const [logs, LogsDispatch] = useReducer(LogsReducer, initialLogsState);
+  const [errorStates, ErrorsDispatch] = useReducer(ErrorReducer, initialErrorStates);
+
+  const { asyncLogs, syncLogs } = logs;
+  const { cantAddEventWhileRunningError, emptyExecutionListError, eventLimitError } = errorStates;
 
   const [executionOrder, setExecutionOrder] = useState<{ [key: string]: number }>({});
-
-  const [executing, setExecuting] = useState(false);
   const [items, setItems] = useState<Item[]>(initialEvents);
-
-  const [canAddEvent, setCanAddEvent] = useState(true);
-  const [cantAddEventWhileRunningError, setCanAddEventWhileRunningError] = useState("");
 
   const addItem = (item: Item) => {
     if (!canAddEvent) {
-      setCanAddEventWhileRunningError("Can't add events while function is running");
+      ErrorsDispatch({
+        type: "SET_CANT_ADD_EVENT_WHILE_RUNNING_ERROR",
+        payload: { message: "Can't add events while function is running" },
+      });
       return;
     }
-
     if (items.length < 10) {
       const uniqueItem = { ...item, id: `${item.id}-${Date.now()}` };
       setItems((prev) => [...prev, uniqueItem]);
-      setEventLimitError("");
-      setEmptyExecutionListError("");
-      setCanAddEventWhileRunningError("");
+      ErrorsDispatch({ type: "CLEAR_ALL_ERRORS" });
     } else {
-      setEventLimitError("Max event limit is 10");
+      ErrorsDispatch({ type: "SET_EVENT_LIMIT_ERROR", payload: { message: "Max event limit is 10" } });
     }
   };
 
@@ -70,7 +71,7 @@ function EventLoopVisualizer() {
     setItems((prev) => prev.filter((prevItem) => prevItem.id !== item.id));
   };
 
-  function handleDragEnd(event: DragEndEvent) {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setItems((prevItems) => {
@@ -79,7 +80,7 @@ function EventLoopVisualizer() {
         return arrayMove(prevItems, oldIndex, newIndex);
       });
     }
-  }
+  };
 
   const runExample = () => {
     setCanAddEvent(false);
@@ -87,14 +88,13 @@ function EventLoopVisualizer() {
 
     if (items.length <= 0) {
       setExecuting(false);
-      setEmptyExecutionListError("Add events to execute");
+      ErrorsDispatch({ type: "SET_EMPTY_EXECUTION_LIST_ERROR", payload: { message: "Add events to execute" } });
       setCanAddEvent(true);
       return;
     }
-    setEmptyExecutionListError("");
+    ErrorsDispatch({ type: "CLEAR_ALL_ERRORS" });
     setRunCount((prev) => prev + 1);
-    setSyncLogs([]);
-    setAsyncLogs([]);
+    LogsDispatch({ type: "CLEAR_ALL_LOGS" });
     setExecutionOrder({});
 
     let execOrder = 1;
@@ -128,9 +128,9 @@ function EventLoopVisualizer() {
           newExecutionOrder[item.id] = execOrder++;
           setExecutionOrder({ ...newExecutionOrder });
           if (isAsync) {
-            setAsyncLogs((prev) => [...prev, message]);
+            LogsDispatch({ type: "ADD_ASYNC_LOG", payload: message });
           } else {
-            setSyncLogs((prev) => [...prev, message]);
+            LogsDispatch({ type: "ADD_SYNC_LOG", payload: message });
           }
         });
       };
@@ -206,9 +206,8 @@ function EventLoopVisualizer() {
       <header className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900">JS Event Loop Visualizer</h1>
         <p className="mt-2 text-lg text-gray-600">
-          Drag and drop events to adjust their order. Then click <span className="font-semibold">Run</span> to see them
-          execute naturally with animated highlights and sequential logs. Logs are divided into synchronous and
-          asynchronous sections.
+          Drag and drop events to adjust their order. Then click <strong>Run</strong> to see them execute naturally with
+          animated highlights and sequential logs. Logs are divided into synchronous and asynchronous sections.
         </p>
       </header>
 
@@ -286,7 +285,7 @@ function EventLoopVisualizer() {
             <h3 className="text-sm font-semibold text-gray-800 mb-2">Sync Logs</h3>
             <div className="p-3 bg-gray-800 text-white border border-gray-700 rounded min-h-[80px] overflow-auto text-xs">
               {syncLogs.length > 0 ? (
-                syncLogs.map((log, i) => <p key={i}>{log}</p>)
+                syncLogs.map((log, i) => <p key={i + `${log}`}>{log}</p>)
               ) : (
                 <p className="text-gray-400 italic">No sync logs</p>
               )}
@@ -296,7 +295,7 @@ function EventLoopVisualizer() {
             <h3 className="text-sm font-semibold text-gray-800 mb-2">Async Logs</h3>
             <div className="p-3 bg-gray-800 text-white border border-gray-700 rounded min-h-[80px] overflow-auto text-xs">
               {asyncLogs.length > 0 ? (
-                asyncLogs.map((log, i) => <p key={i}>{log}</p>)
+                asyncLogs.map((log, i) => <p key={i + `${log}`}>{log}</p>)
               ) : (
                 <p className="text-gray-400 italic">No async logs</p>
               )}
